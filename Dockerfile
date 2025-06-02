@@ -80,19 +80,16 @@ RUN apt update && apt -y install --no-install-recommends \
 FROM base AS final
 
 
-ARG VERILATOR_COMMIT=master
-LABEL verilator_commit=$VERILATOR_COMMIT
 
-RUN mkdir -p /tmp/build && cd /tmp/build && \
-    git clone https://github.com/verilator/verilator verilator && \
-    cd verilator && \
-    git checkout $VERILATOR_COMMIT && \
-    git log -1 --oneline > ../verilator.commit && \
-    export VERILATOR_ROOT=/usr/local/share/verilator && \
-    autoconf && \
-    ./configure && \
-    make -j `nproc` && \
-    make DESTDIR=/tmp/verilator install
+
+
+ARG PDK_BRANCH=dev
+LABEL pdk_branch=$PDK_BRANCH
+
+RUN git clone --recursive https://github.com/IHP-GmbH/IHP-Open-PDK.git && \
+    cd IHP-Open-PDK && \
+    git checkout $PDK_BRANCH
+    
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
