@@ -78,19 +78,13 @@ RUN apt update && apt -y install --no-install-recommends \
 # image than the one used for building the application, but for illustrative
 # purposes the "base" image is used here.
 FROM base AS final
-
-
-
-
-
+#
 ARG PDK_BRANCH=dev
 LABEL pdk_branch=$PDK_BRANCH
-
+#
 RUN git clone --recursive https://github.com/IHP-GmbH/IHP-Open-PDK.git && \
     cd IHP-Open-PDK && \
     git checkout $PDK_BRANCH
-    
-
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
 ARG UID=10001
@@ -103,9 +97,7 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 USER appuser
-
 # Copy the executable from the "build" stage.
 COPY --from=build /bin/hello.sh /bin/
-
 # What the container should run when it is started.
 ENTRYPOINT [ "/bin/hello.sh" ]
