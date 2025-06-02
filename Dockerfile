@@ -58,12 +58,12 @@ RUN apt update && apt -y install --no-install-recommends \
     libfftw3-dev \
     libxml-libxml-perl libgd-perl \
     libsuitesparse-dev gfortran swig libspdlog-dev libeigen3-dev liblemon-dev \
-
+#
 #RUN echo -e '#!/bin/sh\n\
 #echo Hello world from $(whoami)! In order to get your application running in a container, take a look at the comments in the Dockerfile to get started.'\
 #> /bin/hello.sh
 #RUN chmod +x /bin/hello.sh
-
+#
 ################################################################################
 # Create a final stage for running your application.
 #
