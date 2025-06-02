@@ -30,7 +30,7 @@ FROM base AS build
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt update && apt -y install --no-install-recommends \
-    build-essential \
+    build-essential git\
     qtbase5-dev qttools5-dev \
     clang cmake libtool autoconf \
     python3 python3-dev python3-pip python3-virtualenv python3-venv \
@@ -58,6 +58,10 @@ RUN apt update && apt -y install --no-install-recommends \
     libfftw3-dev \
     libxml-libxml-perl libgd-perl \
     libsuitesparse-dev gfortran swig libspdlog-dev libeigen3-dev liblemon-dev \
+    #
+     ca-certificates \
+    && \
+    rm -rf /var/lib/apt/lists/*
 #
 #RUN echo -e '#!/bin/sh\n\
 #echo Hello world from $(whoami)! In order to get your application running in a container, take a look at the comments in the Dockerfile to get started.'\
@@ -75,6 +79,20 @@ RUN apt update && apt -y install --no-install-recommends \
 # purposes the "base" image is used here.
 FROM base AS final
 
+
+ARG VERILATOR_COMMIT=master
+LABEL verilator_commit=$VERILATOR_COMMIT
+
+RUN mkdir -p /tmp/build && cd /tmp/build && \
+    git clone https://github.com/verilator/verilator verilator && \
+    cd verilator && \
+    git checkout $VERILATOR_COMMIT && \
+    git log -1 --oneline > ../verilator.commit && \
+    export VERILATOR_ROOT=/usr/local/share/verilator && \
+    autoconf && \
+    ./configure && \
+    make -j `nproc` && \
+    make DESTDIR=/tmp/verilator install
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
