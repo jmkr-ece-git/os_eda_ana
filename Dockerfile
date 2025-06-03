@@ -82,10 +82,19 @@ FROM base AS final
 ARG PDK_BRANCH=dev
 LABEL pdk_branch=$PDK_BRANCH
 #
-RUN git clone --recursive https://github.com/IHP-GmbH/IHP-Open-PDK.git && \
-    cd IHP-Open-PDK && \
-    git checkout $PDK_BRANCH
-# Create a non-privileged user that the app will run under.
+RUN git clone --recursive https://github.com/IHP-GmbH/IHP-Open-PDK.git  \
+    && cd IHP-Open-PDK \
+    && git checkout $PDK_BRANCH
+
+ENV TOOL_NAME=openvaf_23_5_0_linux_amd64
+ENV OPENVAF_URL=https://openva.fra1.cdn.digitaloceanspaces.com/openvaf_23_5_0_linux_amd64.tar.gz
+
+RUN wget $OPENVAF_URL \
+    && tar -xvzf $TOOL_NAME.tar.gz -C /home/openvaf 
+
+
+
+    # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
 ARG UID=10001
 RUN adduser \
