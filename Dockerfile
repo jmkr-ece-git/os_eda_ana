@@ -88,7 +88,7 @@ RUN git clone --recursive https://github.com/IHP-GmbH/IHP-Open-PDK.git  \
 
 ENV TOOL_NAME=openvaf_23_5_0_linux_amd64
 ENV OPENVAF_URL=https://openva.fra1.cdn.digitaloceanspaces.com/openvaf_23_5_0_linux_amd64.tar.gz
-
+#
 RUN wget $OPENVAF_URL \
     && tar -xvzf $TOOL_NAME.tar.gz -C /home/openvaf 
 
