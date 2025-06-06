@@ -88,10 +88,35 @@ RUN git clone --recursive https://github.com/IHP-GmbH/IHP-Open-PDK.git  \
 
 ENV TOOL_NAME=openvaf_23_5_0_linux_amd64
 ENV OPENVAF_URL=https://openva.fra1.cdn.digitaloceanspaces.com/openvaf_23_5_0_linux_amd64.tar.gz
-
 RUN wget $OPENVAF_URL \
     && tar -xvzf $TOOL_NAME.tar.gz -C /home/openvaf 
 
+ENV PATH="/home/openvaf:$PATH"
+ENV PATH="/home:$PATH"
+
+RUN echo "export PDK_ROOT=\$HOME/your_directory/IHP-Open-PDK" >> ~/.bashrc
+RUN echo "export PDK=ihp-sg13g2" >> ~/.bashrc
+RUN echo "export KLAYOUT_PATH=\"\$HOME/.klayout:\$PDK_ROOT/\$PDK/libs.tech/klayout\"" >> ~/.bashrc
+RUN echo "export KLAYOUT_HOME=\$HOME/.klayout" >> ~/.bashrc
+RUN source ~/.bashrc
+
+RUN git clone --recursive https://github.com/StefanSchippers/xschem.git xschem-src  \
+    && cd IHP-Open-PDK \
+    && ./configure \
+    && make \
+    && make install
+
+RUN cd $PDK_ROOT/$PDK/libs.tech/xschem/ \
+    && python3 install.py
+
+RUN git clone https://git.code.sf.net/p/ngspice/ngspice ngspice-ngspice \
+    && cd ngspice-ngspice \
+    && ./autogen.sh \
+    && ./configure --enable-osdi \
+    && make \
+    && sudo make install \
+    && cd .. \
+    && rm -rf ngspice-ngspice
 
 
     # Create a non-privileged user that the app will run under.
